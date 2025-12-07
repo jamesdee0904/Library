@@ -22,10 +22,12 @@ public class Student extends Account {
         System.out.print("\tSr-Code: ");
         String sr_code = sc.nextLine();
         accounts();
-        for (Map.Entry<String, String> acc : account.entrySet()){
+        boolean validLogin = false;
+        for (Map.Entry<String, String> acc : account.entrySet()) {
             String gsuite = acc.getKey();
             String srcode = acc.getValue();
             if (gsuite.equals(g_suite) && srcode.equals(sr_code)) {
+                validLogin = true;
                 LocalTime localTime = LocalTime.now();
                 LocalDate localDate = LocalDate.now();
                 User newLogin = new User(g_suite, sr_code, localTime, localDate);
@@ -35,6 +37,7 @@ public class Student extends Account {
                     System.out.println("[1] Borrow Book\n[2] Return Book\n[3] Exit");
                     System.out.print("Enter number: ");
                     int enter = sc.nextInt();
+                    sc.nextLine(); 
                     if (enter == 1) {
                         borrowBook();
                     } else if (enter == 2) {
@@ -45,9 +48,13 @@ public class Student extends Account {
                         System.out.println("Invalid input. Please try again.");
                     }
                 }
+                break;
             }
         }
+        if (!validLogin) {
+            System.out.println("Invalid G-Suite or Sr-Code. Login failed.");
         }
+    }
 
     @Override
     public void book() {
@@ -58,52 +65,59 @@ public class Student extends Account {
         book.put(5, "Physics-Calculus");
         book.put(6, "Discrete Mathematics");
     }
-    public void showBook(){
-        for (Map.Entry<Integer, String> entry : book.entrySet()){
+
+    public void showBook() {
+        for (Map.Entry<Integer, String> entry : book.entrySet()) {
             Integer id = entry.getKey();
             String title = entry.getValue();
             System.out.println("\tID: " + id + " Title: " + title);
         }
     }
+
     public void borrowBook() {
         book();
         showBook();
         System.out.print("\t\tBook id: ");
         int book_id = sc.nextInt();
-        if (book.containsKey(book_id)){
+        sc.nextLine(); // consume newline
+        if (book.containsKey(book_id)) {
             String title = book.get(book_id);
             borrow.put(book_id, title);
             System.out.println(" - ".repeat(22));
             System.out.println("\t\t Successfully borrowed title: " + title);
             System.out.println(" - ".repeat(22));
-        }else{
+        } else {
             System.out.println("No book id like that.");
         }
     }
 
-
-
-    public void returnBook(){
-        if (borrow.isEmpty()){
+    public void returnBook() {
+        if (borrow.isEmpty()) {
             System.out.println("No book to return yet.");
-        }else{
-            for (Map.Entry<Integer, String> returnbook : borrow.entrySet()){
+        } else {
+            for (Map.Entry<Integer, String> returnbook : borrow.entrySet()) {
                 Integer id = returnbook.getKey();
                 String title = returnbook.getValue();
                 System.out.println("\tID: " + id + " Title: " + title);
             }
             System.out.print("\t\tReturn Book id: ");
             int bookID = sc.nextInt();
-            if (borrow.containsKey(bookID)){
+            sc.nextLine(); 
+            if (borrow.containsKey(bookID)) {
                 String title = borrow.get(bookID);
                 return_book.put(bookID, title);
-                borrow.remove(bookID, title);
+                borrow.remove(bookID);
                 System.out.println(" - ".repeat(22));
-                System.out.println("\t\t Successfully return the book: " + title);
+                System.out.println("\t\t Successfully returned the book: " + title);
                 System.out.println(" - ".repeat(22));
+            } else {
+                System.out.println("Invalid book ID.");
             }
         }
     }
 
-
+    @Override
+    public void accountMenu() {
+        System.out.println("Student cannot access account management menu.");
+    }
 }
